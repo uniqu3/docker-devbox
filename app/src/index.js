@@ -1,3 +1,3 @@
 if (module.hot) {
-    module.hot.accept((__webpack_public_path__ = 'http://localhost:8080/'));
+    module.hot.accept((__webpack_public_path__ = 'http://localhost:8089/'));
 }

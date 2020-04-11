@@ -1,3 +1,4 @@
+var env = require('dotenv');
 var path = require('path');
 var resolve = require('path').resolve;
 var webpack = require('webpack');
@@ -8,9 +9,9 @@ module.exports = {
         main: './src/index.js',
     },
     devServer: {
-        publicPath: 'http://localhost:8080',
+        publicPath: 'http://localhost:' + process.env.HOST_PORT_WDS || 8089,
         host: '0.0.0.0',
-        port: 8080,
+        port: process.env.HOST_PORT_WDS || 8089,
         https: false,
         proxy: {
             '*': {
@@ -21,11 +22,11 @@ module.exports = {
         disableHostCheck: true,
         hot: false,
         overlay: true,
-        //watchContentBase: true,
-        //watchOptions: {
-        //poll: true,
-        //ignored: /node_modules/,
-        //},
+        watchContentBase: true,
+        watchOptions: {
+            poll: true,
+            ignored: /node_modules/,
+        },
         stats: {
             colors: true,
             chunks: false,

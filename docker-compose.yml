@@ -61,7 +61,7 @@ services:
       - ./app:/usr/src/app
       - node-modules:/usr/src/app/node_modules
     ports:
-      - ${HOST_PORT_WDS}:8081
+      - ${HOST_PORT_WDS}:8089
       - ${HOST_PORT_BROWSERSYNC}:3000
       - ${HOST_PORT_NODE_DEBUG}:9229
       - ${HOST_PORT_NODE_SERVER}:8080
@@ -81,7 +81,8 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - TZ=${TIMEZONE}
     volumes:
-      - ./data/mysql:/var/lib/mysql:rw
+      - ./data/mysql/data:/var/lib/mysql:rw
+      - ./backup/mysql:/var/backups:rw
       - ./config/mysql:/etc/mysql/conf.d:ro
     ports:
       - ${HOST_PORT_MYSQL}:3306
@@ -102,7 +103,7 @@ services:
       - POSTGRES_DB=${PGSQL_DATABASE}
       - TZ=${TIMEZONE}
     volumes:
-      - ./data/pgsql:/var/lib/postgresql/data:rw
+      - ./data/pgsql/data:/var/lib/postgresql/data:rw
     ports:
       - ${HOST_PORT_PGSQL}:5432
     depends_on:
@@ -121,7 +122,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
     volumes:
-      - ./data/mongodb:/data/db
+      - ./data/mongodb/data:/data/db
       - ./config/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
     ports:
       - ${HOST_PORT_MONGO}:27017-27019

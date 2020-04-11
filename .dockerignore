@@ -1,4 +1,5 @@
 data/*
+backup/*
 node_modules
 *.log
 .dockerignore

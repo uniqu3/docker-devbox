@@ -453,7 +453,7 @@
                         <td colspan="3">
                             <div class="spacing">
                                 <p>Testing emails is easy, simply open the Mailhog interface</p><br />
-                                <a class="button is-success" href="//localhost:8025">localhost:8025</a>
+                                <a class="button is-success" href="/mailhog/">localhost:8025</a>
                             </div>
                             <pre class="highlight">
     <code>
@@ -470,6 +470,6 @@
         </section>
     </body>
 
-    <script type="text/javascript" src="http://localhost:8080/main.js"></script>
+    <script type="text/javascript" src="http://localhost:8089/main.js"></script>
 
 </html>
