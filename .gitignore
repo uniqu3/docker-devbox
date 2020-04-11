@@ -1,0 +1,60 @@
+# Node
+node_modules
+
+# Composer
+composer.phar
+.composer
+
+# ignore log files and databases
+*.log
+*.sql
+*.sqlite
+
+# dotenv environment variables file
+.env
+.env.test
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Code editors
+.classpath
+.project
+.settings
+.idea
+.vscode
+.sublimetext
+.metadata
+*.iml
+*.ipr

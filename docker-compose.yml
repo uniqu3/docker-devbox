@@ -1,0 +1,171 @@
+version: "3"
+services:
+  php:
+    container_name: devbox-php
+    build:
+      args:
+        PHP_VERSION: ${PHP_VERSION}-fpm
+        UID: ${NEW_UID}
+        GID: ${NEW_GID}
+      context: ./
+      dockerfile: docker/php/Dockerfile
+    env_file:
+      - ./.env
+    volumes:
+      - ./app:/var/www
+      - ./config/php/devbox-php.ini:/usr/local/etc/php/conf.d/devbox-php.ini:ro
+    networks:
+      devboxnet:
+        aliases:
+          - php.devbox
+  nginx:
+    image: nginx:alpine
+    container_name: devbox-httpd
+    hostname: httpd
+    restart: unless-stopped
+    environment:
+      - TIMEZONE
+      - NEW_UID
+      - NEW_GID
+    volumes:
+      - ./app:/var/www
+      - ./config/httpd:/etc/nginx/conf.d/
+    ports:
+      - ${HOST_PORT_HTTPD}:80
+      - ${HOST_PORT_HTTPD_SSL}:443
+    depends_on:
+      - php
+    networks:
+      devboxnet:
+        aliases:
+          - httpd.devbox
+  node:
+    container_name: devbox-node
+    build:
+      args:
+        NODE_VERSION: ${NODE_VERSION}-alpine
+        UID: ${NEW_UID}
+        GID: ${NEW_GID}
+      context: ./
+      dockerfile: docker/node/Dockerfile
+    hostname: node
+    env_file:
+      - ./.env
+    environment:
+      - HOST_PORT_WDS
+      - HOST_PORT_BROWSERSYNC
+      - HOST_PORT_NODE_DEBUG
+      - HOST_PORT_NODE_SERVER
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./app:/usr/src/app
+      - node-modules:/usr/src/app/node_modules
+    ports:
+      - ${HOST_PORT_WDS}:8081
+      - ${HOST_PORT_BROWSERSYNC}:3000
+      - ${HOST_PORT_NODE_DEBUG}:9229
+      - ${HOST_PORT_NODE_SERVER}:8080
+    command: npm run start:dev
+    networks:
+      devboxnet:
+        aliases:
+          - node.devbox
+  mysql:
+    image: mariadb:${MYSQL_VERSION}
+    container_name: devbox-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - TZ=${TIMEZONE}
+    volumes:
+      - ./data/mysql:/var/lib/mysql:rw
+      - ./config/mysql:/etc/mysql/conf.d:ro
+    ports:
+      - ${HOST_PORT_MYSQL}:3306
+    depends_on:
+      - php
+      - nginx
+    networks:
+      devboxnet:
+        aliases:
+          - mysql.devbox
+  pqsql:
+    image: postgres:${PGSQL_VERSION}-alpine
+    container_name: devbox-pgsql
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=${PGSQL_PASSWORD}
+      - POSTGRES_USER=${PGSQL_USER}
+      - POSTGRES_DB=${PGSQL_DATABASE}
+      - TZ=${TIMEZONE}
+    volumes:
+      - ./data/pgsql:/var/lib/postgresql/data:rw
+    ports:
+      - ${HOST_PORT_PGSQL}:5432
+    depends_on:
+      - php
+      - nginx
+    networks:
+      devboxnet:
+        aliases:
+          - pgsql.devbox
+  mongo:
+    image: mongo:${MONGO_VERSION}
+    container_name: devbox-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    volumes:
+      - ./data/mongodb:/data/db
+      - ./config/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
+    ports:
+      - ${HOST_PORT_MONGO}:27017-27019
+    depends_on:
+      - php
+      - nginx
+    networks:
+      devboxnet:
+        aliases:
+          - mongo.devbox
+  redis:
+    image: redis:alpine
+    container_name: devbox-redis
+    hostname: redis
+    volumes:
+      - ./config/redis:/usr/local/etc/redis:ro
+      - redis-data:/data
+    depends_on:
+      - php
+      - nginx
+    ports:
+      - ${HOST_PORT_REDIS}:6379
+    networks:
+      devboxnet:
+        aliases:
+          - redis.devbox
+  mailhog:
+    image: mailhog/mailhog
+    container_name: devbox-mailhog
+    hostname: mailhog
+    depends_on:
+      - php
+      - nginx
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      devboxnet:
+        aliases:
+          - mailhog.devbox
+networks:
+  devboxnet:
+    driver: bridge
+volumes:
+  node-modules:
+  redis-data:
+    driver: local
