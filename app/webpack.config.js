@@ -1,7 +1,7 @@
-var env = require('dotenv');
-var path = require('path');
-var resolve = require('path').resolve;
-var webpack = require('webpack');
+const env = require('dotenv');
+const path = require('path');
+const resolve = require('path').resolve;
+const webpack = require('webpack');
 
 module.exports = {
     mode: 'development',
